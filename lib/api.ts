@@ -1,22 +1,14 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import {  setTokens,  } from "./auth";
+import { setTokens } from "./auth";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080",
   headers: { "Content-Type": "application/json" },
 });
 
-// ── Request interceptor — attach token ────────────────────────────────────────
-api.interceptors.request.use((config) => {
-  const token = Cookies.get("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ── Shared refresh state ──────────────────────────────────────────────────────
 
-// ── Response interceptor — refresh on 401 ─────────────────────────────────────
 let isRefreshing = false;
 let queue: Array<{
   resolve: (token: string) => void;
@@ -28,6 +20,33 @@ function processQueue(error: unknown, token: string | null) {
   queue = [];
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+async function doRefresh(): Promise<string> {
+  const refreshToken = Cookies.get("refreshToken");
+  if (!refreshToken) throw new Error("No refresh token");
+
+  const { data } = await axios.post(`${BASE_URL}/api/v1/auth/refresh`, {
+    refreshToken,
+  });
+
+  const newToken: string = data.data?.accessToken ?? data.accessToken;
+  const newRefreshToken: string = data.data?.refreshToken ?? data.refreshToken;
+  setTokens(newToken, newRefreshToken);
+  api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+  return newToken;
+}
+
+// ── Request interceptor — attach current token ────────────────────────────────
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ── Response interceptor — refresh on 401, queue concurrent requests ──────────
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -39,7 +58,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // If refresh is already in progress — queue this request
+    // Refresh already in progress — queue this request until it finishes
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         queue.push({ resolve, reject });
@@ -53,23 +72,9 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshToken = Cookies.get("refreshToken");
-      if (!refreshToken) throw new Error("No refresh token");
-
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"}/api/v1/auth/refresh`,
-        { refreshToken }
-      );
-
-      const newToken: string = data.data?.accessToken ?? data.accessToken;
-      const newrefreshToken: string = data.data?.refreshToken ?? data.refreshToken;
-      setTokens(newToken, newrefreshToken)
-      
-
-      api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-      processQueue(null, newToken);
-
-      original.headers.Authorization = `Bearer ${newToken}`;
+      const freshToken = await doRefresh();
+      processQueue(null, freshToken);
+      original.headers.Authorization = `Bearer ${freshToken}`;
       return api(original);
     } catch (refreshError) {
       processQueue(refreshError, null);

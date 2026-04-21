@@ -15,7 +15,7 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 const HeaderSection = () => {
-  const { user, isLoading } = useMe();
+  const { data: user, isLoading } = useMe();
 
   const initials =
     user ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase() : "??";

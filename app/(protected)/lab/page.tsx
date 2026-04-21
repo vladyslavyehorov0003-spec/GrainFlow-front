@@ -1,16 +1,16 @@
 "use client";
 
-import { logout } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import LabWorkerTab from "./_sections/LabWorkerTab";
 
-export default function AppPage() {
+export default function LabPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-bold">Дашборд</h1>
-      <p className="text-muted-foreground">Тут буде основний застосунок</p>
-      <Button variant="outline" onClick={logout}>
-        Вийти
-      </Button>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Laboratory</h1>
+        <p className="text-sm text-muted-foreground">Active grain analyses</p>
+      </div>
+
+      <LabWorkerTab />
     </div>
   );
 }

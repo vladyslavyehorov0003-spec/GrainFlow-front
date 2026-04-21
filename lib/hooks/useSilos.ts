@@ -1,24 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
-import { getWorkers, WorkerFilterParams } from "@/lib/workers";
-import { UserResponse } from "@/lib/auth";
+import { getSilos, SiloFilterParams, SiloResponse } from "@/lib/silo";
 import { SpringPage } from "@/lib/workers";
 
-export function useWorkers(params?: WorkerFilterParams) {
-  const [data, setData] = useState<SpringPage<UserResponse>>({ content: [], totalPages: 0, totalElements: 0, number: 0, size: 0 });
+export function useSilos(params?: SiloFilterParams) {
+  const [data, setData] = useState<SpringPage<SiloResponse>>({ content: [], totalPages: 0, totalElements: 0, number: 0, size: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  const { search, enabled, sort, page, size } = params ?? {};
+  const { culture, page, size, sort } = params ?? {};
 
   useEffect(() => {
     let cancelled = false;
 
-    getWorkers({ search, enabled, sort, page, size })
+    getSilos({ culture, page, size, sort })
       .then((p) => { if (!cancelled) { setData(p); setIsLoading(false); } })
       .catch(() => { if (!cancelled) setIsLoading(false); });
 
     return () => { cancelled = true; };
-  }, [search, enabled, sort, page, size, refetchTrigger]);
+  }, [culture, page, size, sort, refetchTrigger]);
 
   const refetch = useCallback(() => {
     setIsLoading(true);

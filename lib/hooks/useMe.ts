@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { getMe, UserResponse } from "@/lib/auth";
 
 export function useMe() {
-  const [user, setUser] = useState<UserResponse | null>(null);
+  const [data, setData] = useState<UserResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     getMe()
-      .then(setUser)
+      .then(setData)
       .finally(() => setIsLoading(false));
   }, []);
 
-  return { user, isLoading };
+  return { data, isLoading };
 }

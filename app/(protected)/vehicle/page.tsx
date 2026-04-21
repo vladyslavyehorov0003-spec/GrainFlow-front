@@ -1,16 +1,34 @@
 "use client";
 
-import { logout } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { VehicleWorkerTab } from "./_sections/VehicleWorkerTab";
+import { CreateVehicleDialog } from "./_sections/CreateVehicleDialog";
 
-export default function AppPage() {
+export default function VehiclePage() {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  function handleCreated() {
+    setRefreshTrigger((t) => t + 1);
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-bold">Дашборд</h1>
-      <p className="text-muted-foreground">Тут буде основний застосунок</p>
-      <Button variant="outline" onClick={logout}>
-        Вийти
-      </Button>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Vehicles</h1>
+        <p className="text-sm text-muted-foreground">Active deliveries</p>
+      </div>
+
+      <VehicleWorkerTab
+        onAddVehicle={() => setDialogOpen(true)}
+        refreshTrigger={refreshTrigger}
+      />
+
+      <CreateVehicleDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onCreated={handleCreated}
+      />
     </div>
   );
 }

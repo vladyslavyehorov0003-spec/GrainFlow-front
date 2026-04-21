@@ -11,6 +11,7 @@ import {
   Warehouse,
   Users,
   LucideIcon,
+  ClipboardClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ const NAV_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
   { label: "Lab", href: "/lab", icon: FlaskConical },
   { label: "Silos", href: "/silo", icon: Warehouse },
   { label: "Workers", href: "/users", icon: Users },
+  { label: "Audit", href: "/audit", icon: ClipboardClock },
 ];
 
 const NavbarSection = () => {
