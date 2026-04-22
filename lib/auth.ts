@@ -48,12 +48,12 @@ interface AuthResponse {
 }
 
 export async function register(data: RegisterRequest): Promise<void> {
-  const res = await api.post<{ data: AuthResponse }>("/api/v1/auth/register", data);
+  const res = await api.post<{ data: AuthResponse }>("/auth/register", data);
   setTokens(res.data.data.accessToken, res.data.data.refreshToken);
 }
 
 export async function login(data: LoginRequest): Promise<void> {
-  const res = await api.post<{ data: AuthResponse }>("/api/v1/auth/login", data);
+  const res = await api.post<{ data: AuthResponse }>("/auth/login", data);
   setTokens(res.data.data.accessToken, res.data.data.refreshToken);
 }
 
@@ -78,6 +78,6 @@ export interface UserResponse {
 }
 
 export async function getMe(): Promise<UserResponse> {
-  const res = await api.get<{ data: UserResponse }>("/api/v1/users/me");
+  const res = await api.get<{ data: UserResponse }>("/users/me");
   return res.data.data;
 }

@@ -88,31 +88,31 @@ export interface ReleaseLabRequest {
 }
 
 export async function getLabAnalyses(params?: LabFilterParams): Promise<SpringPage<LabAnalysisResponse>> {
-  const res = await api.get<{ data: SpringPage<LabAnalysisResponse> }>("/api/v1/lab-analyses", { params });
+  const res = await api.get<{ data: SpringPage<LabAnalysisResponse> }>("/lab-analyses", { params });
   return res.data.data;
 }
 
 export async function startAnalysis(id: string): Promise<LabAnalysisResponse> {
-  const res = await api.patch<{ data: LabAnalysisResponse }>(`/api/v1/lab-analyses/${id}/start`);
+  const res = await api.patch<{ data: LabAnalysisResponse }>(`/lab-analyses/${id}/start`);
   return res.data.data;
 }
 
 export async function startDrying(id: string, data: StartDryingRequest): Promise<LabAnalysisResponse> {
-  const res = await api.patch<{ data: LabAnalysisResponse }>(`/api/v1/lab-analyses/${id}/start-drying`, data);
+  const res = await api.patch<{ data: LabAnalysisResponse }>(`/lab-analyses/${id}/start-drying`, data);
   return res.data.data;
 }
 
 export async function finishDrying(id: string, data: FinishDryingRequest): Promise<LabAnalysisResponse> {
-  const res = await api.patch<{ data: LabAnalysisResponse }>(`/api/v1/lab-analyses/${id}/finish-drying`, data);
+  const res = await api.patch<{ data: LabAnalysisResponse }>(`/lab-analyses/${id}/finish-drying`, data);
   return res.data.data;
 }
 
 export async function finishAnalysis(id: string, data: FinishAnalysisRequest): Promise<LabAnalysisResponse> {
-  const res = await api.patch<{ data: LabAnalysisResponse }>(`/api/v1/lab-analyses/${id}/finish-analysis`, data);
+  const res = await api.patch<{ data: LabAnalysisResponse }>(`/lab-analyses/${id}/finish-analysis`, data);
   return res.data.data;
 }
 
 export async function releaseLab(id: string, data: ReleaseLabRequest): Promise<LabAnalysisResponse> {
-  const res = await api.patch<{ data: LabAnalysisResponse }>(`/api/v1/lab-analyses/${id}/release`, data);
+  const res = await api.patch<{ data: LabAnalysisResponse }>(`/lab-analyses/${id}/release`, data);
   return res.data.data;
 }

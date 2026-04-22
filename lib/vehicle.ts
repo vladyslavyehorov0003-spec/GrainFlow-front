@@ -44,26 +44,26 @@ export interface VehicleFilterParams {
 
 
 export async function getVehicles(params?: VehicleFilterParams): Promise<SpringPage<VehicleResponse>> {
-  const res = await api.get<{ data: SpringPage<VehicleResponse> }>("/api/v1/vehicles", { params });
+  const res = await api.get<{ data: SpringPage<VehicleResponse> }>("/vehicles", { params });
   return res.data.data;
 }
 
 export async function createVehicle(data: CreateVehicleRequest): Promise<VehicleResponse> {
-  const res = await api.post<{ data: VehicleResponse }>("/api/v1/vehicles", data);
+  const res = await api.post<{ data: VehicleResponse }>("/vehicles", data);
   return res.data.data;
 }
 
 export async function startProcessing(id: string): Promise<VehicleResponse> {
-  const res = await api.patch<{ data: VehicleResponse }>(`/api/v1/vehicles/${id}/start-processing`);
+  const res = await api.patch<{ data: VehicleResponse }>(`/vehicles/${id}/start-processing`);
   return res.data.data;
 }
 
 export async function acceptVehicle(id: string): Promise<VehicleResponse> {
-  const res = await api.patch<{ data: VehicleResponse }>(`/api/v1/vehicles/${id}/accept`);
+  const res = await api.patch<{ data: VehicleResponse }>(`/vehicles/${id}/accept`);
   return res.data.data;
 }
 
 export async function rejectVehicle(id: string, comment?: string): Promise<VehicleResponse> {
-  const res = await api.patch<{ data: VehicleResponse }>(`/api/v1/vehicles/${id}/reject`, null, { params: { comment } });
+  const res = await api.patch<{ data: VehicleResponse }>(`/vehicles/${id}/reject`, null, { params: { comment } });
   return res.data.data;
 }

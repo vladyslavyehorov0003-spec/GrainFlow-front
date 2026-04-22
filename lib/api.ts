@@ -26,7 +26,7 @@ async function doRefresh(): Promise<string> {
   const refreshToken = Cookies.get("refreshToken");
   if (!refreshToken) throw new Error("No refresh token");
 
-  const { data } = await axios.post(`${BASE_URL}/api/v1/auth/refresh`, {
+  const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
     refreshToken,
   });
 

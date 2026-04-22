@@ -28,6 +28,6 @@ export interface AuditResponce {
   createdAt:  string;
 }
 export async function getAudit(params:AuditFilterParams): Promise<SpringPage<AuditResponce>> {
-    const resp=await api.get<{data:SpringPage<AuditResponce>}>("/api/v1/audit",{params})
+    const resp=await api.get<{data:SpringPage<AuditResponce>}>("/audit",{params})
     return resp.data.data
 }

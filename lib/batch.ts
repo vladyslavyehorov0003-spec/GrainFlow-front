@@ -49,7 +49,7 @@ export const STATUS_LABEL: Record<BatchStatus, string> = {
 };
 
 export async function getBatches(params?: BatchFilterParams): Promise<SpringPage<BatchResponse>> {
-  const res = await api.get<{ data: SpringPage<BatchResponse> }>("/api/v1/batches", { params });
+  const res = await api.get<{ data: SpringPage<BatchResponse> }>("/batches", { params });
   return res.data.data;
 }
 
@@ -63,11 +63,11 @@ export interface CreateBatchRequest {
 }
 
 export async function getBatch(id: string): Promise<BatchResponse> {
-  const res = await api.get<{ data: BatchResponse }>(`/api/v1/batches/${id}`);
+  const res = await api.get<{ data: BatchResponse }>(`/batches/${id}`);
   return res.data.data;
 }
 
 export async function createBatch(data: CreateBatchRequest): Promise<BatchResponse> {
-  const res = await api.post<{ data: BatchResponse }>("/api/v1/batches", data);
+  const res = await api.post<{ data: BatchResponse }>("/batches", data);
   return res.data.data;
 }
