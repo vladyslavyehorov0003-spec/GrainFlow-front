@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { SiloResponse, updateSilo, deleteSilo } from "@/lib/silo";
+import { getErrorMessage } from "@/lib/errors";
 import { CULTURE_LABEL, CultureType } from "@/lib/batch";
 import { AddGrainDialog } from "./AddGrainDialog";
 import { RemoveGrainDialog } from "./RemoveGrainDialog";
@@ -100,8 +101,8 @@ export function SiloDetailsSheet({ silo, onUpdated }: Props) {
       });
       toast.success("Silo updated");
       onUpdated();
-    } catch {
-      toast.error("Failed to update silo");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to update silo"));
     }
   }
 
@@ -111,8 +112,8 @@ export function SiloDetailsSheet({ silo, onUpdated }: Props) {
       toast.success(`${silo.name} deleted`);
       setOpen(false);
       onUpdated();
-    } catch {
-      toast.error("Failed to delete silo");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to delete silo"));
     }
   }
 

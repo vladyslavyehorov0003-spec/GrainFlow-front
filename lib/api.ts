@@ -1,6 +1,7 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Cookies from "js-cookie";
 import { setTokens } from "./auth";
+import { ApiError, SERVER_ERROR_MESSAGE, NETWORK_ERROR_MESSAGE } from "./errors";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080",
@@ -46,16 +47,43 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// ── Error normalization ───────────────────────────────────────────────────────
+function normalizeError(error: unknown): ApiError {
+  if (!axios.isAxiosError(error)) {
+    return new ApiError((error as Error)?.message ?? "Unexpected error");
+  }
+  const axiosError = error as AxiosError<{ message?: string }>;
+
+  // Request never reached the server (offline / CORS / timeout)
+  if (!axiosError.response) {
+    return new ApiError(NETWORK_ERROR_MESSAGE, { isNetworkError: true });
+  }
+
+  const status         = axiosError.response.status;
+  const backendMessage = axiosError.response.data?.message ?? null;
+
+  // Hide backend internals on 5xx
+  if (status >= 500) {
+    return new ApiError(SERVER_ERROR_MESSAGE, { status });
+  }
+
+  // 4xx — use backend message when present
+  return new ApiError(
+    backendMessage ?? `Request failed (${status})`,
+    { status, serverMessage: backendMessage }
+  );
+}
+
 // ── Response interceptor — refresh on 401, queue concurrent requests ──────────
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
 
-    // Not a 401/403 or already retried — just throw
+    // Not a 401/403 or already retried — normalize and throw
     const status = error.response?.status;
     if ((status !== 401 && status !== 403) || original._retry) {
-      return Promise.reject(error);
+      return Promise.reject(normalizeError(error));
     }
 
     // Refresh already in progress — queue this request until it finishes
@@ -81,7 +109,7 @@ api.interceptors.response.use(
       Cookies.remove("token", { path: "/" });
       Cookies.remove("refreshToken", { path: "/" });
       if (typeof window !== "undefined") window.location.href = "/login";
-      return Promise.reject(refreshError);
+      return Promise.reject(normalizeError(refreshError));
     } finally {
       isRefreshing = false;
     }

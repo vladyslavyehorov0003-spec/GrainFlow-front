@@ -39,6 +39,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { createVehicle, CreateVehicleRequest } from "@/lib/vehicle";
+import { getErrorMessage } from "@/lib/errors";
 import { getBatches, BatchResponse, CULTURE_LABEL, CultureType } from "@/lib/batch";
 import { cn } from "@/lib/utils";
 
@@ -106,8 +107,8 @@ export function CreateVehicleDialog({ open, onOpenChange, onCreated }: Props) {
       toast.success(`Vehicle ${data.licensePlate} registered`);
       handleOpenChange(false);
       onCreated();
-    } catch {
-      toast.error("Failed to register vehicle");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to register vehicle"));
     }
   }
 

@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { createBatch, CreateBatchRequest, CULTURE_LABEL, CultureType } from "@/lib/batch";
+import { getErrorMessage } from "@/lib/errors";
 
 const CULTURES = Object.keys(CULTURE_LABEL) as CultureType[];
 
@@ -71,8 +72,8 @@ export function CreateBatchDialog({ onCreated }: Props) {
       reset();
       setOpen(false);
       onCreated();
-    } catch {
-      toast.error("Failed to create batch");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to create batch"));
     }
   }
 

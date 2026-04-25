@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { VehicleResponse, acceptVehicle, rejectVehicle } from "@/lib/vehicle";
+import { getErrorMessage } from "@/lib/errors";
 import { getBatch, BatchResponse, CULTURE_LABEL } from "@/lib/batch";
 import { getLabAnalyses, LabAnalysisResponse } from "@/lib/lab";
 
@@ -122,8 +123,8 @@ export function DecisionDialog({ vehicle, onDone }: Props) {
       toast.success(`${vehicle.licensePlate} accepted`);
       handleClose();
       onDone();
-    } catch {
-      toast.error("Failed to accept vehicle");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to accept vehicle"));
     }
   }
 
@@ -133,8 +134,8 @@ export function DecisionDialog({ vehicle, onDone }: Props) {
       toast.success(`${vehicle.licensePlate} rejected`);
       handleClose();
       onDone();
-    } catch {
-      toast.error("Failed to reject vehicle");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to reject vehicle"));
     }
   }
 

@@ -19,7 +19,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { register as registerUser, RegisterRequest } from "@/lib/auth";
+import { register as registerUser, getMe, RegisterRequest } from "@/lib/auth";
+import { getErrorMessage } from "@/lib/errors";
 
 const schema = z.object({
   firstName: z.string().min(1, "Enter first name"),
@@ -56,10 +57,11 @@ const RegistrationSection = () => {
   async function onSubmit(data: RegisterRequest) {
     try {
       await registerUser(data);
+      const user = await getMe();
       toast.success("Account created!");
-      router.push("/app");
-    } catch {
-      toast.error("Registration failed. Please try again.");
+      router.push(user.role === "MANAGER" ? "/app" : "/batch");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Registration failed. Please try again."));
     }
   }
   return (

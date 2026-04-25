@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LabAnalysisResponse, startDrying, finishDrying } from "@/lib/lab";
+import { getErrorMessage } from "@/lib/errors";
 
 // ── Start Drying ──────────────────────────────────────────────────────────────
 
@@ -39,8 +40,8 @@ export function StartDryingDialog({ analysis, onDone }: StartProps) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to start drying");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to start drying"));
     }
   }
 
@@ -94,8 +95,8 @@ export function FinishDryingDialog({ analysis, onDone }: FinishProps) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to finish drying");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to finish drying"));
     }
   }
 

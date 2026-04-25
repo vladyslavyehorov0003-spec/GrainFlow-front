@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createWorker, CreateWorkerRequest } from "@/lib/workers";
+import { getErrorMessage } from "@/lib/errors";
 import { useState } from "react";
 
 const schema = z.object({
@@ -48,8 +49,8 @@ export function CreateWorkerDialog({ onCreated }: Props) {
       reset();
       setOpen(false);
       onCreated();
-    } catch {
-      toast.error("Failed to create worker");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to create worker"));
     }
   }
 

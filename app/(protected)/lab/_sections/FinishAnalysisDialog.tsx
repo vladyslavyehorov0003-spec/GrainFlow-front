@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LabAnalysisResponse, finishAnalysis } from "@/lib/lab";
+import { getErrorMessage } from "@/lib/errors";
 
 const schema = z.object({
   moisture:     z.string().min(1, "Required").refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, "Must be ≥ 0"),
@@ -43,8 +44,8 @@ export function FinishAnalysisDialog({ analysis, onDone }: Props) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to record analysis");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to record analysis"));
     }
   }
 

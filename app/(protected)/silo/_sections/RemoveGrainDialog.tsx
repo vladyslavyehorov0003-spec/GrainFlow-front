@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { SiloResponse, removeGrain } from "@/lib/silo";
+import { getErrorMessage } from "@/lib/errors";
 
 interface Props {
   silo:   SiloResponse;
@@ -55,8 +56,8 @@ export function RemoveGrainDialog({ silo, onDone }: Props) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to remove grain");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to remove grain"));
     }
   }
 

@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createSilo } from "@/lib/silo";
+import { getErrorMessage } from "@/lib/errors";
 import { CULTURE_LABEL, CultureType } from "@/lib/batch";
 
 const CULTURES = Object.keys(CULTURE_LABEL) as CultureType[];
@@ -69,8 +70,8 @@ export function CreateSiloDialog({ onCreated }: Props) {
       reset();
       setOpen(false);
       onCreated();
-    } catch {
-      toast.error("Failed to create silo");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to create silo"));
     }
   }
 

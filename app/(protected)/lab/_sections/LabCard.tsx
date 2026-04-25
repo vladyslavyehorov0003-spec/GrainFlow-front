@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { LabAnalysisResponse, LabStatus, LAB_STATUS_LABEL, startAnalysis } from "@/lib/lab";
+import { getErrorMessage } from "@/lib/errors";
 import { FinishAnalysisDialog } from "./FinishAnalysisDialog";
 import { StartDryingDialog, FinishDryingDialog } from "./DryingDialogs";
 import { ReleaseDialog } from "./ReleaseDialog";
@@ -61,8 +62,8 @@ export function LabCard({ analysis, onUpdated }: Props) {
       await startAnalysis(analysis.id);
       toast.success("Analysis started");
       onUpdated();
-    } catch {
-      toast.error("Failed to start analysis");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to start analysis"));
     }
   }
 

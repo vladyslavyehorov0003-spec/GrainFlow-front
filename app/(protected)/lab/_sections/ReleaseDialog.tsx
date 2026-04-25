@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LabAnalysisResponse, releaseLab } from "@/lib/lab";
+import { getErrorMessage } from "@/lib/errors";
 
 const schema = z.object({
   isApproved: z.boolean(),
@@ -34,8 +35,8 @@ export function ReleaseDialog({ analysis, onDone }: Props) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to release vehicle");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to release vehicle"));
     }
   }
 

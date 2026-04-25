@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/pagination";
 import { useWorkers } from "@/lib/hooks/useWorkers";
 import { deleteWorker } from "@/lib/workers";
+import { getErrorMessage } from "@/lib/errors";
 import { toast } from "sonner";
 import { Search, ArrowUp, ArrowDown } from "lucide-react";
 import { CreateWorkerDialog } from "./CreateWorkerDialog";
@@ -74,8 +75,8 @@ export function WorkersSection() {
       await deleteWorker(id);
       toast.success(`${name} deactivated`);
       refetch();
-    } catch {
-      toast.error("Failed to deactivate worker");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to deactivate worker"));
     }
   }
 

@@ -14,24 +14,39 @@ import {
   ClipboardClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMe } from "@/lib/hooks/useMe";
 
-const NAV_ITEMS: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Dashboard", href: "/app", icon: LayoutDashboard },
-  { label: "Batches", href: "/batch", icon: PackageSearch },
-  { label: "Vehicles", href: "/vehicle", icon: Truck },
-  { label: "Lab", href: "/lab", icon: FlaskConical },
-  { label: "Silos", href: "/silo", icon: Warehouse },
-  { label: "Workers", href: "/users", icon: Users },
-  { label: "Audit", href: "/audit", icon: ClipboardClock },
+type NavItem = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  managerOnly?: boolean;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { label: "Dashboard", href: "/app",    icon: LayoutDashboard, managerOnly: true },
+  { label: "Batches",   href: "/batch",  icon: PackageSearch },
+  { label: "Vehicles",  href: "/vehicle", icon: Truck },
+  { label: "Lab",       href: "/lab",    icon: FlaskConical },
+  { label: "Silos",     href: "/silo",   icon: Warehouse },
+  { label: "Workers",   href: "/users",  icon: Users,           managerOnly: true },
+  { label: "Audit",     href: "/audit",  icon: ClipboardClock,  managerOnly: true },
 ];
 
 const NavbarSection = () => {
   const pathname = usePathname();
+  const { data: user } = useMe();
+
+  const isManager = user?.role === "MANAGER";
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => !item.managerOnly || isManager,
+  );
 
   return (
     <aside className="fixed top-16 left-0 bottom-0 w-64  border-r bg-muted/40 z-40">
       <nav className="flex flex-col gap-1 p-3">
-        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+        {visibleItems.map(({ label, href, icon: Icon }) => {
           const isActive = pathname === href;
           return (
             <Link

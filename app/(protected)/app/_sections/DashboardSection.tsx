@@ -10,6 +10,7 @@ import { getBatches, BatchResponse } from "@/lib/batch";
 import { getLabAnalyses, LabAnalysisResponse } from "@/lib/lab";
 
 import { StatCard } from "./StatCard";
+import { SubscriptionCard } from "./SubscriptionCard";
 import { SiloCapacityChart } from "./SiloCapacityChart";
 import { VehicleStatusChart } from "./VehicleStatusChart";
 import { LabStatusChart } from "./LabStatusChart";
@@ -104,6 +105,11 @@ export function DashboardSection() {
           sub={`${totalFill.toFixed(1)} / ${totalCap.toFixed(1)} t`}
           icon={FlaskConical}
         />
+      </div>
+
+      {/* Subscription */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <SubscriptionCard />
       </div>
 
       {/* Silo chart + Vehicle donut */}

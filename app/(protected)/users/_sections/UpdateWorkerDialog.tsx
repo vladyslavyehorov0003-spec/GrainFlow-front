@@ -25,6 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { updateWorker, UpdateWorkerRequest } from "@/lib/workers";
+import { getErrorMessage } from "@/lib/errors";
 import { UserResponse } from "@/lib/auth";
 
 const schema = z.object({
@@ -88,8 +89,8 @@ export function UpdateWorkerDialog({ worker, onUpdated }: Props) {
       toast.success("Worker updated");
       setOpen(false);
       onUpdated();
-    } catch {
-      toast.error("Failed to update worker");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to update worker"));
     }
   }
 

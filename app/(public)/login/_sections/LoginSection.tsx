@@ -18,7 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { login } from "@/lib/auth";
+import { login, getMe } from "@/lib/auth";
+import { getErrorMessage } from "@/lib/errors";
 
 import React from "react";
 
@@ -51,9 +52,10 @@ const LoginSection = () => {
   async function onSubmit(data: FormData) {
     try {
       await login(data);
-      router.push("/app");
-    } catch {
-      toast.error("Invalid email or password");
+      const user = await getMe();
+      router.push(user.role === "MANAGER" ? "/app" : "/batch");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Invalid email or password"));
     }
   }
   return (

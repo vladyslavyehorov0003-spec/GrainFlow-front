@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { VehicleResponse, VehicleStatus, startProcessing } from "@/lib/vehicle";
+import { getErrorMessage } from "@/lib/errors";
 import { CULTURE_LABEL } from "@/lib/batch";
 import { toast } from "sonner";
 import { Truck, User, Clock } from "lucide-react";
@@ -45,8 +46,8 @@ export function VehicleCard({ vehicle, onUpdated }: Props) {
       await startProcessing(vehicle.id);
       toast.success(`Processing started for ${licensePlate}`);
       onUpdated();
-    } catch {
-      toast.error("Failed to start processing");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to start processing"));
     }
   }
 

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { SiloResponse, addGrain } from "@/lib/silo";
+import { getErrorMessage } from "@/lib/errors";
 import { getLabAnalyses, LabAnalysisResponse } from "@/lib/lab";
 
 const schema = z.object({
@@ -76,8 +77,8 @@ export function AddGrainDialog({ silo, onDone }: Props) {
       reset();
       setOpen(false);
       onDone();
-    } catch {
-      toast.error("Failed to add grain");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to add grain"));
     }
   }
 
