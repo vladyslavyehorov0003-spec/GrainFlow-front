@@ -6,11 +6,11 @@ export const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center gap-6 px-6 py-32">
       <h1 className="text-5xl font-bold tracking-tight max-w-2xl">
-        Управляйте зерновим складом без зайвого паперу
+        Manage your grain warehouse without the paperwork.
       </h1>
       <p className="text-xl text-muted-foreground max-w-xl">
-        GrainFlow — від контракту і зважування до лабораторії та силосу. Все в
-        одному місці.
+        GrainFlow — from contract and weighing to lab and silo. All in one
+        place.
       </p>
       <div className="flex gap-3">
         <Button
@@ -18,7 +18,7 @@ export const HeroSection = () => {
           nativeButton={false}
           render={<Link href="/register" />}
         >
-          Спробувати безкоштовно
+          Try for free
         </Button>
         <Button
           size="lg"
@@ -26,7 +26,7 @@ export const HeroSection = () => {
           nativeButton={false}
           render={<Link href="/login" />}
         >
-          Увійти
+          Log in
         </Button>
       </div>
     </section>

@@ -106,9 +106,16 @@ api.interceptors.response.use(
       return api(original);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      Cookies.remove("token", { path: "/" });
-      Cookies.remove("refreshToken", { path: "/" });
-      if (typeof window !== "undefined") window.location.href = "/login";
+      const isAuthFailure =
+        axios.isAxiosError(refreshError) &&
+        (refreshError.response?.status === 401 || refreshError.response?.status === 403);
+      if (isAuthFailure) {
+        Cookies.remove("token", { path: "/" });
+        Cookies.remove("refreshToken", { path: "/" });
+        if (typeof window !== "undefined") window.location.href = "/login";
+      } else {
+        if (typeof window !== "undefined") window.location.href = "/maintenance";
+      }
       return Promise.reject(normalizeError(refreshError));
     } finally {
       isRefreshing = false;

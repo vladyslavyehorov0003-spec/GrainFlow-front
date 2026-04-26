@@ -25,7 +25,7 @@ const PricingSection = () => {
           <div className="rounded-2xl border p-8 flex flex-col gap-4">
             <div className="space-y-1">
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Пробний період
+                Trial period
               </p>
               <p className="text-4xl font-bold">€0</p>
               <p className="text-sm text-muted-foreground">First month</p>
@@ -50,7 +50,7 @@ const PricingSection = () => {
               <p className="text-sm font-medium opacity-70 uppercase tracking-wide">
                 After trial
               </p>
-              <p className="text-4xl font-bold">€50</p>
+              <p className="text-4xl font-bold">€20</p>
               <p className="text-sm opacity-70">for month</p>
             </div>
             <ul className="space-y-2 text-sm">
