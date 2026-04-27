@@ -9,8 +9,8 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -18,13 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
 import { createSilo } from "@/lib/silo";
 import { getErrorMessage } from "@/lib/errors";
 import { CULTURE_LABEL, CultureType } from "@/lib/batch";
@@ -76,61 +71,52 @@ export function CreateSiloDialog({ onCreated }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}>
-      <DialogTrigger render={<Button size="sm" />}>
-        <Plus size={15} />
-        Add silo
-      </DialogTrigger>
+    <FormDialog
+      open={open}
+      onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}
+      trigger={
+        <DialogTrigger render={<Button size="sm" />}>
+          <Plus size={15} />
+          Add silo
+        </DialogTrigger>
+      }
+      title="New silo"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Create silo"
+      submittingLabel="Creating..."
+    >
+      <FormField label="Name" error={errors.name?.message}>
+        <Input placeholder="Silo A1" {...register("name")} />
+      </FormField>
 
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>New silo</DialogTitle>
-        </DialogHeader>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Capacity (t)" error={errors.maxAmount?.message}>
+          <Input type="number" step="0.001" placeholder="0.000" {...register("maxAmount")} />
+        </FormField>
+        <FormField label="Culture" optional>
+          <Controller
+            name="culture"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v || undefined)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Any..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {CULTURES.map((c) => (
+                    <SelectItem key={c} value={c}>{CULTURE_LABEL[c]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormField>
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="space-y-1">
-            <Label>Name</Label>
-            <Input placeholder="Silo A1" {...register("name")} />
-            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>Capacity (t)</Label>
-              <Input type="number" step="0.001" placeholder="0.000" {...register("maxAmount")} />
-              {errors.maxAmount && <p className="text-xs text-destructive">{errors.maxAmount.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Culture <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Controller
-                name="culture"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value ?? ""} onValueChange={(v) => field.onChange(v || undefined)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Any..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CULTURES.map((c) => (
-                        <SelectItem key={c} value={c}>{CULTURE_LABEL[c]}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Label>Comment <span className="text-muted-foreground text-xs">(optional)</span></Label>
-            <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create silo"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <FormField label="Comment" optional>
+        <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
+      </FormField>
+    </FormDialog>
   );
 }

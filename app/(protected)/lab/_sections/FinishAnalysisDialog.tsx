@@ -8,9 +8,10 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DialogTrigger } from "@/components/ui/dialog";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
 import { LabAnalysisResponse, finishAnalysis } from "@/lib/lab";
 import { getErrorMessage } from "@/lib/errors";
 
@@ -50,41 +51,33 @@ export function FinishAnalysisDialog({ analysis, onDone }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}>
-      <DialogTrigger render={<Button size="sm" />}>Finish Analysis</DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Finish Analysis</DialogTitle></DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <Label>Moisture (%)</Label>
-              <Input type="number" step="0.01" placeholder="0.00" {...register("moisture")} />
-              {errors.moisture && <p className="text-xs text-destructive">{errors.moisture.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Impurity (%)</Label>
-              <Input type="number" step="0.01" placeholder="0.00" {...register("impurity")} />
-              {errors.impurity && <p className="text-xs text-destructive">{errors.impurity.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Protein <span className="text-muted-foreground text-xs">opt.</span></Label>
-              <Input type="number" step="0.01" placeholder="0.00" {...register("protein")} />
-            </div>
-          </div>
-          <div className="space-y-1">
-            <Label>Actual volume (t)</Label>
-            <Input type="number" step="0.001" placeholder="0.000" {...register("actualVolume")} />
-            {errors.actualVolume && <p className="text-xs text-destructive">{errors.actualVolume.message}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label>Comment <span className="text-muted-foreground text-xs">(optional)</span></Label>
-            <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
-          </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Results"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}
+      trigger={<DialogTrigger render={<Button size="sm" />}>Finish Analysis</DialogTrigger>}
+      title="Finish Analysis"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Save Results"
+      submittingLabel="Saving..."
+    >
+      <div className="grid grid-cols-3 gap-3">
+        <FormField label="Moisture (%)" error={errors.moisture?.message}>
+          <Input type="number" step="0.01" placeholder="0.00" {...register("moisture")} />
+        </FormField>
+        <FormField label="Impurity (%)" error={errors.impurity?.message}>
+          <Input type="number" step="0.01" placeholder="0.00" {...register("impurity")} />
+        </FormField>
+        <FormField label="Protein" optional>
+          <Input type="number" step="0.01" placeholder="0.00" {...register("protein")} />
+        </FormField>
+      </div>
+      <FormField label="Actual volume (t)" error={errors.actualVolume?.message}>
+        <Input type="number" step="0.001" placeholder="0.000" {...register("actualVolume")} />
+      </FormField>
+      <FormField label="Comment" optional>
+        <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
+      </FormField>
+    </FormDialog>
   );
 }

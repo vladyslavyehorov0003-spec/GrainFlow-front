@@ -9,7 +9,7 @@ import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -17,13 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
 import { updateWorker, UpdateWorkerRequest } from "@/lib/workers";
 import { getErrorMessage } from "@/lib/errors";
 import { UserResponse } from "@/lib/auth";
@@ -59,7 +54,6 @@ export function UpdateWorkerDialog({ worker, onUpdated }: Props) {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  // Pre-fill form with current worker data whenever dialog opens
   useEffect(() => {
     if (open) {
       reset({
@@ -80,7 +74,6 @@ export function UpdateWorkerDialog({ worker, onUpdated }: Props) {
       email: data.email,
       enabled: data.enabled,
     };
-    // Only send password/pin if the user actually typed something
     if (data.password) payload.password = data.password;
     if (data.pin) payload.pin = data.pin;
 
@@ -95,121 +88,71 @@ export function UpdateWorkerDialog({ worker, onUpdated }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-editing"
+    <FormDialog
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
+        <DialogTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-editing"
+            />
+          }
+        >
+          <Pencil size={15} />
+        </DialogTrigger>
+      }
+      title="Edit worker"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Save changes"
+      submittingLabel="Saving..."
+    >
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="First name" error={errors.firstName?.message}>
+          <Input placeholder="John" {...register("firstName")} />
+        </FormField>
+        <FormField label="Last name" error={errors.lastName?.message}>
+          <Input placeholder="Smith" {...register("lastName")} />
+        </FormField>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Email" error={errors.email?.message}>
+          <Input type="email" placeholder="worker@example.com" {...register("email")} />
+        </FormField>
+        <FormField label="Status">
+          <Controller
+            name="enabled"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ? "true" : "false"}
+                onValueChange={(v) => field.onChange(v === "true")}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Active</SelectItem>
+                  <SelectItem value="false">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           />
-        }
-      >
-        <Pencil size={15} />
-      </DialogTrigger>
+        </FormField>
+      </div>
 
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit worker</DialogTitle>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>First name</Label>
-              <Input placeholder="John" {...register("firstName")} />
-              {errors.firstName && (
-                <p className="text-xs text-destructive">
-                  {errors.firstName.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <Label>Last name</Label>
-              <Input placeholder="Smith" {...register("lastName")} />
-              {errors.lastName && (
-                <p className="text-xs text-destructive">
-                  {errors.lastName.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>Email</Label>
-              <Input
-                type="email"
-                placeholder="worker@example.com"
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <Label>Status</Label>
-              <Controller
-                name="enabled"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value ? "true" : "false"}
-                    onValueChange={(v) => field.onChange(v === "true")}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Active</SelectItem>
-                      <SelectItem value="false">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>
-                New password{" "}
-                <span className="text-muted-foreground text-xs">
-                  (optional)
-                </span>
-              </Label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-xs text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <Label>
-                New PIN{" "}
-                <span className="text-muted-foreground text-xs">
-                  (optional)
-                </span>
-              </Label>
-              <Input placeholder="1234" {...register("pin")} />
-              {errors.pin && (
-                <p className="text-xs text-destructive">{errors.pin.message}</p>
-              )}
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save changes"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="New password" optional error={errors.password?.message}>
+          <Input type="password" placeholder="••••••••" {...register("password")} />
+        </FormField>
+        <FormField label="New PIN" optional error={errors.pin?.message}>
+          <Input placeholder="1234" {...register("pin")} />
+        </FormField>
+      </div>
+    </FormDialog>
   );
 }

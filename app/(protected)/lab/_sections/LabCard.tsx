@@ -3,7 +3,6 @@
 import { toast } from "sonner";
 import { FlaskConical, Truck, Clock } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -16,8 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { LabStatusBadge } from "@/components/feedback/StatusBadge";
 
-import { LabAnalysisResponse, LabStatus, LAB_STATUS_LABEL, startAnalysis } from "@/lib/lab";
+import { LabAnalysisResponse, LabStatus, startAnalysis } from "@/lib/lab";
 import { getErrorMessage } from "@/lib/errors";
 import { FinishAnalysisDialog } from "./FinishAnalysisDialog";
 import { StartDryingDialog, FinishDryingDialog } from "./DryingDialogs";
@@ -31,11 +31,6 @@ function fmt(iso: string | null) {
 function fmtDate(iso: string | null) {
   if (!iso) return "—";
   return new Date(iso).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
-}
-
-function statusVariant(status: LabStatus): "secondary" | "default" | "destructive" | "outline" {
-  if (status === "ANALYSIS_DONE" || status === "DRYING" || status === "DRYING_DONE") return "outline";
-  return "secondary";
 }
 
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
@@ -80,9 +75,7 @@ export function LabCard({ analysis, onUpdated }: Props) {
                 <Truck size={13} className="text-muted-foreground" />
                 {analysis.vehicleId.slice(0, 8).toUpperCase()}
               </span>
-              <Badge variant={statusVariant(status)} className="text-xs">
-                {LAB_STATUS_LABEL[status]}
-              </Badge>
+              <LabStatusBadge status={status} className="text-xs" />
             </div>
             <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Clock size={11} />

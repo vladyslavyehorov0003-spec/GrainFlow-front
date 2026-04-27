@@ -48,6 +48,12 @@ export const STATUS_LABEL: Record<BatchStatus, string> = {
   CLOSED:  "Closed",
 };
 
+export const STATUS_VARIANT: Record<BatchStatus, "default" | "secondary" | "outline" | "destructive"> = {
+  PLANNED: "secondary",
+  ACTIVE:  "default",
+  CLOSED:  "outline",
+};
+
 export async function getBatches(params?: BatchFilterParams): Promise<SpringPage<BatchResponse>> {
   const res = await api.get<{ data: SpringPage<BatchResponse> }>("/batches", { params });
   return res.data.data;

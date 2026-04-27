@@ -23,7 +23,10 @@ const HeaderSection = () => {
   return (
     <header className="fixed top-0 w-full inset-x-0 h-16 border-b bg-background z-50">
       <div className="px-6 h-full flex items-center justify-between gap-6">
-        <Link href="/app" className="font-bold text-lg shrink-0">
+        <Link
+          href="/app"
+          className="font-bold hidden lg:block text-lg shrink-0"
+        >
           {isLoading ?
             <Skeleton className="h-5 w-32" />
           : (user?.companyName ?? "GrainFlow")}

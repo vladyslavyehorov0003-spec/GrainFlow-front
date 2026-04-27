@@ -9,7 +9,6 @@ import { ChevronsUpDown, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -18,13 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Popover,
   PopoverContent,
@@ -38,7 +30,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { createVehicle, CreateVehicleRequest } from "@/lib/vehicle";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
+import { createVehicle } from "@/lib/vehicle";
 import { getErrorMessage } from "@/lib/errors";
 import { getBatches, BatchResponse, CULTURE_LABEL, CultureType } from "@/lib/batch";
 import { cn } from "@/lib/utils";
@@ -79,7 +73,6 @@ export function CreateVehicleDialog({ open, onOpenChange, onCreated }: Props) {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  // Load active batches when dialog opens
   useEffect(() => {
     if (!open) return;
     Promise.all([
@@ -113,121 +106,102 @@ export function CreateVehicleDialog({ open, onOpenChange, onCreated }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Register vehicle</DialogTitle>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-
-          {/* Batch search */}
-          <div className="space-y-1">
-            <Label>Batch</Label>
-            <Popover open={batchPopoverOpen} onOpenChange={setBatchPopoverOpen}>
-              <PopoverTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-between font-normal",
-                      !selectedBatch && "text-muted-foreground"
-                    )}
-                  />
-                }
-              >
-                {selectedBatch
-                  ? <><span className="font-medium">{selectedBatch.contractNumber}</span><span className="text-muted-foreground ml-2">{CULTURE_LABEL[selectedBatch.culture]}</span></>
-                  : "Search by contract number..."}
-                <ChevronsUpDown size={14} className="ml-auto shrink-0 opacity-50" />
-              </PopoverTrigger>
-              <PopoverContent className="w-[--anchor-width] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Contract number..." />
-                  <CommandList>
-                    <CommandEmpty>No active batches found.</CommandEmpty>
-                    <CommandGroup>
-                      {batches.map((b) => (
-                        <CommandItem
-                          key={b.id}
-                          value={b.contractNumber}
-                          onSelect={() => {
-                            setSelectedBatch(b);
-                            setValue("batchId", b.id, { shouldValidate: true });
-                            setBatchPopoverOpen(false);
-                          }}
-                        >
-                          <Check
-                            size={14}
-                            className={cn("shrink-0", selectedBatch?.id === b.id ? "opacity-100" : "opacity-0")}
-                          />
-                          <span>{b.contractNumber}</span>
-                          <span className="ml-auto text-xs text-muted-foreground">
-                            {CULTURE_LABEL[b.culture]}
-                          </span>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-            {errors.batchId && <p className="text-xs text-destructive">{errors.batchId.message}</p>}
-          </div>
-
-          {/* License plate + Driver */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>License plate</Label>
-              <Input placeholder="AA 1234 BB" {...register("licensePlate")} />
-              {errors.licensePlate && <p className="text-xs text-destructive">{errors.licensePlate.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Driver <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Input placeholder="Ivan Petrov" {...register("driverName")} />
-            </div>
-          </div>
-
-          {/* Culture + Volume */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>Culture</Label>
-              <Controller
-                name="culture"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CULTURES.map((c) => (
-                        <SelectItem key={c} value={c}>{CULTURE_LABEL[c]}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+    <FormDialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      title="Register vehicle"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Register vehicle"
+      submittingLabel="Registering..."
+    >
+      <FormField label="Batch" error={errors.batchId?.message}>
+        <Popover open={batchPopoverOpen} onOpenChange={setBatchPopoverOpen}>
+          <PopoverTrigger
+            render={
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-between font-normal",
+                  !selectedBatch && "text-muted-foreground"
                 )}
               />
-              {errors.culture && <p className="text-xs text-destructive">{errors.culture.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Declared volume (t)</Label>
-              <Input type="number" step="0.001" placeholder="0.000" {...register("declaredVolume")} />
-              {errors.declaredVolume && <p className="text-xs text-destructive">{errors.declaredVolume.message}</p>}
-            </div>
-          </div>
+            }
+          >
+            {selectedBatch
+              ? <><span className="font-medium">{selectedBatch.contractNumber}</span><span className="text-muted-foreground ml-2">{CULTURE_LABEL[selectedBatch.culture]}</span></>
+              : "Search by contract number..."}
+            <ChevronsUpDown size={14} className="ml-auto shrink-0 opacity-50" />
+          </PopoverTrigger>
+          <PopoverContent className="w-[--anchor-width] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Contract number..." />
+              <CommandList>
+                <CommandEmpty>No active batches found.</CommandEmpty>
+                <CommandGroup>
+                  {batches.map((b) => (
+                    <CommandItem
+                      key={b.id}
+                      value={b.contractNumber}
+                      onSelect={() => {
+                        setSelectedBatch(b);
+                        setValue("batchId", b.id, { shouldValidate: true });
+                        setBatchPopoverOpen(false);
+                      }}
+                    >
+                      <Check
+                        size={14}
+                        className={cn("shrink-0", selectedBatch?.id === b.id ? "opacity-100" : "opacity-0")}
+                      />
+                      <span>{b.contractNumber}</span>
+                      <span className="ml-auto text-xs text-muted-foreground">
+                        {CULTURE_LABEL[b.culture]}
+                      </span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      </FormField>
 
-          {/* Comment */}
-          <div className="space-y-1">
-            <Label>Comment <span className="text-muted-foreground text-xs">(optional)</span></Label>
-            <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
-          </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="License plate" error={errors.licensePlate?.message}>
+          <Input placeholder="AA 1234 BB" {...register("licensePlate")} />
+        </FormField>
+        <FormField label="Driver" optional>
+          <Input placeholder="Ivan Petrov" {...register("driverName")} />
+        </FormField>
+      </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Registering..." : "Register vehicle"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Culture" error={errors.culture?.message}>
+          <Controller
+            name="culture"
+            control={control}
+            render={({ field }) => (
+              <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {CULTURES.map((c) => (
+                    <SelectItem key={c} value={c}>{CULTURE_LABEL[c]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </FormField>
+        <FormField label="Declared volume (t)" error={errors.declaredVolume?.message}>
+          <Input type="number" step="0.001" placeholder="0.000" {...register("declaredVolume")} />
+        </FormField>
+      </div>
+
+      <FormField label="Comment" optional>
+        <Textarea placeholder="Notes..." rows={2} {...register("comment")} />
+      </FormField>
+    </FormDialog>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { LabAnalysisResponse, LabStatus } from "@/lib/lab";
+import { LabAnalysisResponse, LabStatus, LAB_STATUS_LABEL } from "@/lib/lab";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 interface Props {
@@ -17,16 +17,6 @@ const STATUS_COLOR: Record<LabStatus, string> = {
   CANCELED:      "#ef4444",
 };
 
-const STATUS_LABEL: Record<LabStatus, string> = {
-  PENDING:       "Pending",
-  IN_PROGRESS:   "In progress",
-  ANALYSIS_DONE: "Analysis done",
-  DRYING:        "Drying",
-  DRYING_DONE:   "Drying done",
-  STORED:        "Stored",
-  CANCELED:      "Canceled",
-};
-
 export function LabStatusChart({ analyses }: Props) {
   const counts = analyses.reduce<Record<string, number>>((acc, a) => {
     acc[a.status] = (acc[a.status] ?? 0) + 1;
@@ -34,7 +24,7 @@ export function LabStatusChart({ analyses }: Props) {
   }, {});
 
   const data = Object.entries(counts).map(([status, count]) => ({
-    name:  STATUS_LABEL[status as LabStatus] ?? status,
+    name:  LAB_STATUS_LABEL[status as LabStatus] ?? status,
     value: count,
     color: STATUS_COLOR[status as LabStatus] ?? "#94a3b8",
   }));

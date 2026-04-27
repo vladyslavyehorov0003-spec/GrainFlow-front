@@ -16,8 +16,8 @@ export default function ProtectedLayout({
       <NavbarSection />
       <HeaderSection />
 
-      <main className="pt-16 pl-64 min-h-screen">
-        <div className="p-6">{children}</div>
+      <main className="pt-16 pb-20 md:pb-0 md:pl-64 min-h-screen">
+        <div className="p-4 md:p-6">{children}</div>
       </main>
     </>
   );

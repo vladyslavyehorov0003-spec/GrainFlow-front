@@ -20,6 +20,16 @@ export const LAB_STATUS_LABEL: Record<LabStatus, string> = {
   CANCELED:      "Canceled",
 };
 
+export const LAB_STATUS_VARIANT: Record<LabStatus, "default" | "secondary" | "outline" | "destructive"> = {
+  PENDING:       "secondary",
+  IN_PROGRESS:   "default",
+  ANALYSIS_DONE: "secondary",
+  DRYING:        "default",
+  DRYING_DONE:   "secondary",
+  STORED:        "outline",
+  CANCELED:      "destructive",
+};
+
 export interface LabAnalysisResponse {
   id:                   string;
   companyId:            string;

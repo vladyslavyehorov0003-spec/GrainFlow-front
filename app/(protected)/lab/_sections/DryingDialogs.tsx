@@ -9,12 +9,11 @@ import { Flame } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DialogTrigger } from "@/components/ui/dialog";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
 import { LabAnalysisResponse, startDrying, finishDrying } from "@/lib/lab";
 import { getErrorMessage } from "@/lib/errors";
-
-// ── Start Drying ──────────────────────────────────────────────────────────────
 
 const startSchema = z.object({
   volumeBeforeDrying:   z.string().min(1, "Required").refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, "Must be > 0"),
@@ -46,32 +45,30 @@ export function StartDryingDialog({ analysis, onDone }: StartProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}>
-      <DialogTrigger render={<Button size="sm" variant="outline" />}>
-        <Flame size={14} /> Start Drying
-      </DialogTrigger>
-      <DialogContent className="max-w-sm">
-        <DialogHeader><DialogTitle>Start Drying</DialogTitle></DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="space-y-1">
-            <Label>Volume before drying (t)</Label>
-            <Input type="number" step="0.001" placeholder="0.000" {...register("volumeBeforeDrying")} />
-            {errors.volumeBeforeDrying && <p className="text-xs text-destructive">{errors.volumeBeforeDrying.message as string}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label>Estimated end <span className="text-muted-foreground text-xs">(optional)</span></Label>
-            <Input type="datetime-local" {...register("estimatedDryingEndAt")} />
-          </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Starting..." : "Start Drying"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}
+      trigger={
+        <DialogTrigger render={<Button size="sm" variant="outline" />}>
+          <Flame size={14} /> Start Drying
+        </DialogTrigger>
+      }
+      title="Start Drying"
+      maxWidth="sm"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Start Drying"
+      submittingLabel="Starting..."
+    >
+      <FormField label="Volume before drying (t)" error={errors.volumeBeforeDrying?.message as string | undefined}>
+        <Input type="number" step="0.001" placeholder="0.000" {...register("volumeBeforeDrying")} />
+      </FormField>
+      <FormField label="Estimated end" optional>
+        <Input type="datetime-local" {...register("estimatedDryingEndAt")} />
+      </FormField>
+    </FormDialog>
   );
 }
-
-// ── Finish Drying ─────────────────────────────────────────────────────────────
 
 const finishSchema = z.object({
   volumeAfterDrying:   z.string().min(1, "Required").refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, "Must be > 0"),
@@ -101,26 +98,23 @@ export function FinishDryingDialog({ analysis, onDone }: FinishProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}>
-      <DialogTrigger render={<Button size="sm" variant="outline" />}>Finish Drying</DialogTrigger>
-      <DialogContent className="max-w-sm">
-        <DialogHeader><DialogTitle>Finish Drying</DialogTitle></DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <div className="space-y-1">
-            <Label>Volume after drying (t)</Label>
-            <Input type="number" step="0.001" placeholder="0.000" {...register("volumeAfterDrying")} />
-            {errors.volumeAfterDrying && <p className="text-xs text-destructive">{errors.volumeAfterDrying.message as string}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label>Moisture after drying (%)</Label>
-            <Input type="number" step="0.01" placeholder="0.00" {...register("moistureAfterDrying")} />
-            {errors.moistureAfterDrying && <p className="text-xs text-destructive">{errors.moistureAfterDrying.message as string}</p>}
-          </div>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Finish Drying"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={(v) => { if (!v) reset(); setOpen(v); }}
+      trigger={<DialogTrigger render={<Button size="sm" variant="outline" />}>Finish Drying</DialogTrigger>}
+      title="Finish Drying"
+      maxWidth="sm"
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Finish Drying"
+      submittingLabel="Saving..."
+    >
+      <FormField label="Volume after drying (t)" error={errors.volumeAfterDrying?.message as string | undefined}>
+        <Input type="number" step="0.001" placeholder="0.000" {...register("volumeAfterDrying")} />
+      </FormField>
+      <FormField label="Moisture after drying (%)" error={errors.moistureAfterDrying?.message as string | undefined}>
+        <Input type="number" step="0.01" placeholder="0.00" {...register("moistureAfterDrying")} />
+      </FormField>
+    </FormDialog>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { VehicleStatusBadge } from "@/components/feedback/StatusBadge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -30,14 +31,6 @@ function formatTime(iso: string | null) {
   return new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
-const STATUS_BADGE: Record<VehicleStatus, { label: string; variant: "secondary" | "default" | "outline" | "destructive" }> = {
-  ARRIVED:        { label: "Waiting",        variant: "secondary" },
-  IN_PROCESS:     { label: "In Process",     variant: "default" },
-  PENDING_REVIEW: { label: "Pending Review", variant: "outline" },
-  ACCEPTED:       { label: "Accepted",       variant: "outline" },
-  REJECTED:       { label: "Rejected",       variant: "destructive" },
-};
-
 export function VehicleCard({ vehicle, onUpdated }: Props) {
   const { licensePlate, driverName, culture, declaredVolume, status, arrivedAt, unloadingStartedAt } = vehicle;
 
@@ -60,9 +53,7 @@ export function VehicleCard({ vehicle, onUpdated }: Props) {
       <div className="flex-1 min-w-0 space-y-1">
         <div className="flex items-center gap-2">
           <span className="text-base font-bold tracking-wide">{licensePlate}</span>
-          <Badge variant={STATUS_BADGE[status].variant} className="text-xs">
-            {STATUS_BADGE[status].label}
-          </Badge>
+          <VehicleStatusBadge status={status} className="text-xs" />
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">

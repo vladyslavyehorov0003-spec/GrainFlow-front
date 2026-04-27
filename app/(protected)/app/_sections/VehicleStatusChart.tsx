@@ -1,6 +1,6 @@
 "use client";
 
-import { VehicleResponse, VehicleStatus } from "@/lib/vehicle";
+import { VehicleResponse, VehicleStatus, STATUS_LABEL } from "@/lib/vehicle";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 interface Props {
@@ -13,14 +13,6 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   PENDING_REVIEW: "#8b5cf6",
   ACCEPTED:       "#22c55e",
   REJECTED:       "#ef4444",
-};
-
-const STATUS_LABEL: Record<VehicleStatus, string> = {
-  ARRIVED:        "Waiting",
-  IN_PROCESS:     "In process",
-  PENDING_REVIEW: "Pending review",
-  ACCEPTED:       "Accepted",
-  REJECTED:       "Rejected",
 };
 
 export function VehicleStatusChart({ vehicles }: Props) {

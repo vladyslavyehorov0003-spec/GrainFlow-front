@@ -4,6 +4,22 @@ import { CultureType } from "./batch";
 
 export type VehicleStatus = "ARRIVED" | "IN_PROCESS" | "PENDING_REVIEW" | "ACCEPTED" | "REJECTED";
 
+export const STATUS_LABEL: Record<VehicleStatus, string> = {
+  ARRIVED:        "Waiting",
+  IN_PROCESS:     "In Process",
+  PENDING_REVIEW: "Pending Review",
+  ACCEPTED:       "Accepted",
+  REJECTED:       "Rejected",
+};
+
+export const STATUS_VARIANT: Record<VehicleStatus, "default" | "secondary" | "outline" | "destructive"> = {
+  ARRIVED:        "secondary",
+  IN_PROCESS:     "default",
+  PENDING_REVIEW: "secondary",
+  ACCEPTED:       "outline",
+  REJECTED:       "destructive",
+};
+
 export interface VehicleResponse {
   id:                   string;
   companyId:            string;

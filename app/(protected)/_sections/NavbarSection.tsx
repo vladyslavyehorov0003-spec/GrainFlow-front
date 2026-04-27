@@ -44,16 +44,23 @@ const NavbarSection = () => {
   );
 
   return (
-    <aside className="fixed top-16 left-0 bottom-0 w-64  border-r bg-muted/40 z-40">
-      <nav className="flex flex-col gap-1 p-3">
+    <aside
+      className={cn(
+        "fixed z-40 bg-muted/40",
+        "bottom-0 inset-x-0 border-t",
+        "md:top-16 md:left-0 md:right-auto md:w-64 md:border-r md:border-t-0",
+      )}
+    >
+      <nav className="flex justify-around p-3 gap-1 md:flex-col md:justify-start">
         {visibleItems.map(({ label, href, icon: Icon }) => {
           const isActive = pathname === href;
           return (
             <Link
               key={href}
               href={href}
+              aria-label={label}
               className={cn(
-                "relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150",
+                "relative flex items-center justify-center md:justify-start gap-3 p-2 md:px-3 md:py-2 rounded-lg text-sm font-medium transition-colors duration-150",
                 isActive ?
                   "text-primary-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -67,7 +74,7 @@ const NavbarSection = () => {
                 />
               )}
               <Icon size={18} className="relative z-10 shrink-0" />
-              <span className="relative z-10">{label}</span>
+              <span className="relative z-10 hidden md:inline">{label}</span>
             </Link>
           );
         })}

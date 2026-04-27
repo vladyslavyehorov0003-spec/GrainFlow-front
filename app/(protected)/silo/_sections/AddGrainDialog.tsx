@@ -5,10 +5,10 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PackagePlus, Loader2 } from "lucide-react";
+import { PackagePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -16,13 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/forms/FormDialog";
+import { FormField } from "@/components/forms/FormField";
 
 import { SiloResponse, addGrain } from "@/lib/silo";
 import { getErrorMessage } from "@/lib/errors";
@@ -48,7 +43,6 @@ export function AddGrainDialog({ silo, onDone }: Props) {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
@@ -83,101 +77,72 @@ export function AddGrainDialog({ silo, onDone }: Props) {
   }
 
   return (
-    <Dialog
+    <FormDialog
       open={open}
       onOpenChange={(v) => {
         if (!v) reset();
         else fetchAnalyses();
         setOpen(v);
       }}
+      trigger={
+        <DialogTrigger render={<Button size="sm" className="flex-1" />}>
+          <PackagePlus size={14} />
+          Add grain
+        </DialogTrigger>
+      }
+      title={`Add grain — ${silo.name}`}
+      maxWidth="sm"
+      loading={loading}
+      isSubmitting={isSubmitting}
+      onSubmit={handleSubmit(onSubmit)}
+      submitLabel="Add to silo"
+      submittingLabel="Adding..."
+      submitDisabled={analyses.length === 0}
     >
-      <DialogTrigger render={<Button size="sm" className="flex-1" />}>
-        <PackagePlus size={14} />
-        Add grain
-      </DialogTrigger>
+      <FormField label="Lab analysis" error={errors.labAnalysisId?.message}>
+        <Controller
+          name="labAnalysisId"
+          control={control}
+          render={({ field }) => (
+            <Select value={field.value ?? ""} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue
+                  placeholder={
+                    analyses.length === 0 ?
+                      "No approved analyses available"
+                    : "Select..."
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {analyses.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    <span className="font-mono">
+                      {a.vehicleId.slice(0, 8).toUpperCase()}
+                    </span>
+                    <span className="ml-2 text-muted-foreground">
+                      {a.volumeAfterDrying != null ? `${a.volumeAfterDrying} t` : "—"}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </FormField>
 
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Add grain — {silo.name}</DialogTitle>
-        </DialogHeader>
-
-        {loading ?
-          <div className="flex justify-center py-8">
-            <Loader2 size={20} className="animate-spin text-muted-foreground" />
+      {selectedAnalysis && (
+        <div className="rounded-lg border bg-muted/40 px-3 py-2 space-y-1 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Actual volume</span>
+            <span className="font-medium">{selectedAnalysis.volumeAfterDrying} t</span>
           </div>
-        : <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-            <div className="space-y-1">
-              <Label>Lab analysis</Label>
-              <Controller
-                name="labAnalysisId"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value ?? ""}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={
-                          analyses.length === 0 ?
-                            "No approved analyses available"
-                          : "Select..."
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {analyses.map((a) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          <span className="font-mono">
-                            {a.vehicleId.slice(0, 8).toUpperCase()}
-                          </span>
-                          <span className="ml-2 text-muted-foreground">
-                            {a.volumeAfterDrying != null ?
-                              `${a.volumeAfterDrying} t`
-                            : "—"}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.labAnalysisId && (
-                <p className="text-xs text-destructive">
-                  {errors.labAnalysisId.message}
-                </p>
-              )}
-            </div>
-
-            {selectedAnalysis && (
-              <div className="rounded-lg border bg-muted/40 px-3 py-2 space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Actual volume</span>
-                  <span className="font-medium">
-                    {selectedAnalysis.volumeAfterDrying} t
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    Available in silo
-                  </span>
-                  <span className="font-medium">
-                    {silo.maxAmount - silo.currentAmount} t
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting || analyses.length === 0}
-            >
-              {isSubmitting ? "Adding..." : "Add to silo"}
-            </Button>
-          </form>
-        }
-      </DialogContent>
-    </Dialog>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Available in silo</span>
+            <span className="font-medium">{silo.maxAmount - silo.currentAmount} t</span>
+          </div>
+        </div>
+      )}
+    </FormDialog>
   );
 }

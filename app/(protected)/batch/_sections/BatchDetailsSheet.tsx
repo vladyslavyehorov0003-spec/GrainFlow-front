@@ -10,18 +10,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BatchResponse, CULTURE_LABEL, STATUS_LABEL } from "@/lib/batch";
+import { BatchStatusBadge } from "@/components/feedback/StatusBadge";
+import { BatchResponse, CULTURE_LABEL } from "@/lib/batch";
 import { Eye } from "lucide-react";
 
 interface Props {
   batch: BatchResponse;
 }
-
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
-  PLANNED: "secondary",
-  ACTIVE:  "default",
-  CLOSED:  "outline",
-};
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -47,7 +42,7 @@ export function BatchDetailsSheet({ batch }: Props) {
         <SheetHeader className="pb-2">
           <SheetTitle>{batch.contractNumber}</SheetTitle>
           <div className="flex gap-2 pt-1">
-            <Badge variant={STATUS_VARIANT[batch.status]}>{STATUS_LABEL[batch.status]}</Badge>
+            <BatchStatusBadge status={batch.status} />
             <Badge variant="outline">{CULTURE_LABEL[batch.culture]}</Badge>
           </div>
         </SheetHeader>
