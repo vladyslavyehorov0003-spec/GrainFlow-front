@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
@@ -17,6 +17,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GrainFlow",
   description: "Grain warehouse management system",
+};
+
+// Without this export Next.js App Router does NOT add <meta name="viewport">.
+// Browsers then default to a virtual 980px viewport — breakpoints (md/lg) fire
+// based on that instead of the real window width, so responsive layout breaks.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
