@@ -28,9 +28,11 @@ function SkeletonRow() {
   return (
     <div className="flex items-center gap-4 rounded-xl border bg-card px-5 py-4">
       <Skeleton className="size-10 rounded-lg shrink-0" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-5 w-36" />
-        <Skeleton className="h-4 w-64" />
+      {/* min-w-0 lets the flex item shrink below its content's intrinsic width.
+          max-w-full on the inner bars keeps them inside the parent on tiny screens. */}
+      <div className="flex-1 min-w-0 space-y-2">
+        <Skeleton className="h-5 w-36 max-w-full" />
+        <Skeleton className="h-4 w-64 max-w-full" />
       </div>
       <Skeleton className="h-8 w-36 shrink-0" />
     </div>
