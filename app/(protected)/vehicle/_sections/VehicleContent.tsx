@@ -5,16 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VehicleWorkerTab } from "./VehicleWorkerTab";
 import { VehicleTableSection } from "./VehicleTableSection";
 import { CreateVehicleDialog } from "./CreateVehicleDialog";
-import { useMe } from "@/lib/hooks/useMe";
+import { useUser } from "@/lib/UserContext";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 export function VehicleContent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { data: user } = useMe();
+  const user = useUser();
 
-  const isManager = user?.role === "MANAGER";
+  const isManager = user.role === "MANAGER";
 
   function handleCreated() {
     setRefreshTrigger((t) => t + 1);

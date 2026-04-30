@@ -1,15 +1,8 @@
-import { useState, useEffect } from "react";
-import { getMe, UserResponse } from "@/lib/auth";
+"use client";
 
-export function useMe() {
-  const [data, setData] = useState<UserResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+import { useUser } from "@/lib/UserContext";
+import type { UserResponse } from "@/lib/auth";
 
-  useEffect(() => {
-    getMe()
-      .then(setData)
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  return { data, isLoading };
+export function useMe(): { data: UserResponse; isLoading: false } {
+  return { data: useUser(), isLoading: false };
 }

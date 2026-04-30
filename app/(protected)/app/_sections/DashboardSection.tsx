@@ -39,7 +39,8 @@ export function DashboardSection() {
       setVehicles(v.content);
       setBatches(b.content);
       setAnalyses(l.content);
-    }).finally(() => setLoading(false));
+    }).catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   // ── computed stats ────────────────────────────────────────────────────────

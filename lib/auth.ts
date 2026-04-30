@@ -52,6 +52,15 @@ export async function register(data: RegisterRequest): Promise<void> {
   setTokens(res.data.data.accessToken, res.data.data.refreshToken);
 }
 
+export async function verifyEmail(token: string): Promise<void> {
+  const res = await api.post<{ data: AuthResponse }>(`/auth/verify?token=${encodeURIComponent(token)}`);
+  setTokens(res.data.data.accessToken, res.data.data.refreshToken);
+}
+
+export async function resendVerification(email: string): Promise<void> {
+  await api.post("/auth/resend-verification", { email });
+}
+
 export async function login(data: LoginRequest): Promise<void> {
   const res = await api.post<{ data: AuthResponse }>("/auth/login", data);
   setTokens(res.data.data.accessToken, res.data.data.refreshToken);
@@ -74,6 +83,7 @@ export interface UserResponse {
   companyId: string;
   companyName: string;
   enabled: boolean;
+  companyVerified: boolean;
   createdAt: string;
 }
 

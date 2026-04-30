@@ -1,20 +1,9 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getMeServer } from "@/lib/auth.server";
 
-import { useMe } from "@/lib/hooks/useMe";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
-export function ManagerGuard({ children }: { children: React.ReactNode }) {
-  const { data: user, isLoading } = useMe();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && user?.role !== "MANAGER") {
-      router.replace("/batch");
-    }
-  }, [user, isLoading, router]);
-
-  if (isLoading || user?.role !== "MANAGER") return null;
-
+export async function ManagerGuard({ children }: { children: React.ReactNode }) {
+  const user = await getMeServer();
+  if (!user) redirect("/api/logout");
+  if (user.role !== "MANAGER") redirect("/batch");
   return <>{children}</>;
 }

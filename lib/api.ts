@@ -80,9 +80,10 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    // Not a 401/403 or already retried — normalize and throw
+    // Not a 401 or already retried — normalize and throw
+    // 403 is "authenticated but forbidden" — no point refreshing the token
     const status = error.response?.status;
-    if ((status !== 401 && status !== 403) || original._retry) {
+    if (status !== 401 || original._retry) {
       return Promise.reject(normalizeError(error));
     }
 
@@ -108,7 +109,7 @@ api.interceptors.response.use(
       processQueue(refreshError, null);
       const isAuthFailure =
         axios.isAxiosError(refreshError) &&
-        (refreshError.response?.status === 401 || refreshError.response?.status === 403);
+        refreshError.response?.status === 401;
       if (isAuthFailure) {
         Cookies.remove("token", { path: "/" });
         Cookies.remove("refreshToken", { path: "/" });

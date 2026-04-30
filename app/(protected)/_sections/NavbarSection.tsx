@@ -14,7 +14,7 @@ import {
   ClipboardClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMe } from "@/lib/hooks/useMe";
+import { useUser } from "@/lib/UserContext";
 
 type NavItem = {
   label: string;
@@ -35,9 +35,9 @@ const NAV_ITEMS: NavItem[] = [
 
 const NavbarSection = () => {
   const pathname = usePathname();
-  const { data: user } = useMe();
+  const user = useUser();
 
-  const isManager = user?.role === "MANAGER";
+  const isManager = user.role === "MANAGER";
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.managerOnly || isManager,

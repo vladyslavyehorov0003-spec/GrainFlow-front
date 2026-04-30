@@ -10,6 +10,8 @@ import {
   SubscriptionResponse,
   SubscriptionStatus,
 } from "@/lib/payment";
+import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errors";
 
 const STATUS_LABEL: Record<SubscriptionStatus, string> = {
   ACTIVE:   "Active",
@@ -31,7 +33,10 @@ export function SubscriptionCard() {
   const [busy, setBusy]       = useState(false);
 
   useEffect(() => {
-    getSubscription().then(setSub).finally(() => setLoading(false));
+    getSubscription()
+      .then(setSub)
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   async function handleAction() {
@@ -39,6 +44,8 @@ export function SubscriptionCard() {
     try {
       const url = sub?.status === "ACTIVE" ? await createPortal() : await createCheckout();
       window.location.href = url;
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Failed to open payment page"));
     } finally {
       setBusy(false);
     }

@@ -3,11 +3,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LabWorkerTab from "./LabWorkerTab";
 import { LabTableSection } from "./LabTableSection";
-import { useMe } from "@/lib/hooks/useMe";
+import { useUser } from "@/lib/UserContext";
 
 export function LabContent() {
-  const { data: user } = useMe();
-  const isManager = user?.role === "MANAGER";
+  const user = useUser();
+  const isManager = user.role === "MANAGER";
 
   return (
     <div className="space-y-6">

@@ -20,6 +20,7 @@ export function useVehicles(params: VehicleFilterParams) {
     setIsLoading(true);
     getVehicles(params)
       .then((d) => { if (!cancelled) setData(d); })
+      .catch(() => {})
       .finally(() => { if (!cancelled) setIsLoading(false); });
     return () => { cancelled = true; };
   }, [JSON.stringify(params)]);

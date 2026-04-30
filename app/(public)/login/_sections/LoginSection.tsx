@@ -21,8 +21,6 @@ import {
 import { login, getMe } from "@/lib/auth";
 import { getErrorMessage } from "@/lib/errors";
 
-import React from "react";
-
 const schema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(1, "Enter password"),
