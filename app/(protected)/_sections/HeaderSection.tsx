@@ -18,35 +18,37 @@ const HeaderSection = () => {
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
   return (
-    <header className="fixed top-0 w-full inset-x-0 h-16 border-b bg-background z-50">
-      <div className="px-6 h-full flex items-center justify-between gap-6">
+    <header className="fixed top-0 inset-x-0 h-16 border-b bg-background z-50">
+      <div className="px-4 sm:px-6 h-full flex items-center justify-between gap-3 sm:gap-6">
         <Link
           href="/app"
-          className="font-bold hidden lg:block text-lg shrink-0"
+          className="font-bold hidden lg:block text-lg shrink-0 truncate max-w-[200px]"
         >
           {user.companyName}
         </Link>
 
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 ml-auto">
+          <Avatar className="h-8 w-8 shrink-0">
             <AvatarFallback className="text-xs font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col leading-none">
-            <span className="text-sm font-semibold">
+          {/* Name + email — hidden on tiny screens to prevent header overflow.
+              Long emails were the main cause of Safari shrinking the page. */}
+          <div className="hidden sm:flex flex-col leading-none min-w-0">
+            <span className="text-sm font-semibold truncate">
               {user.firstName} {user.lastName}
             </span>
-            <span className="text-xs text-muted-foreground">{user.email}</span>
+            <span className="text-xs text-muted-foreground truncate">{user.email}</span>
           </div>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs shrink-0">
             {ROLE_LABEL[user.role] ?? user.role}
           </Badge>
 
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
             onClick={logout}
           >
             <LogOut size={16} />

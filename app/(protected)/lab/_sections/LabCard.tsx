@@ -64,13 +64,14 @@ export function LabCard({ analysis, onUpdated }: Props) {
 
   return (
     <div className="rounded-xl border bg-card p-5 space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
+      {/* Header: stacks on mobile, side-by-side on sm+ */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="shrink-0 rounded-lg bg-muted p-2.5">
             <FlaskConical size={18} className="text-muted-foreground" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold flex items-center gap-1.5">
                 <Truck size={13} className="text-muted-foreground" />
                 {analysis.vehicleId.slice(0, 8).toUpperCase()}
@@ -85,7 +86,8 @@ export function LabCard({ analysis, onUpdated }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+        {/* Buttons: full width on mobile (under header), auto width on sm+ */}
+        <div className="flex items-center gap-2 flex-wrap sm:shrink-0 sm:justify-end">
           {status === "PENDING" && (
             <AlertDialog>
               <AlertDialogTrigger render={<Button size="sm" />}>Start Analysis</AlertDialogTrigger>
@@ -111,7 +113,7 @@ export function LabCard({ analysis, onUpdated }: Props) {
       </div>
 
       {(analysis.moisture != null || analysis.impurity != null || analysis.actualVolume != null) && (
-        <div className="grid grid-cols-4 gap-4 pt-3 border-t">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t">
           <Field label="Moisture" value={analysis.moisture != null ? `${analysis.moisture}%` : null} />
           <Field label="Impurity" value={analysis.impurity != null ? `${analysis.impurity}%` : null} />
           <Field label="Protein" value={analysis.protein != null ? `${analysis.protein}%` : null} />
@@ -120,7 +122,7 @@ export function LabCard({ analysis, onUpdated }: Props) {
       )}
 
       {analysis.dryingStartedAt && (
-        <div className="grid grid-cols-4 gap-4 pt-3 border-t">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t">
           <Field label="Vol. before" value={analysis.volumeBeforeDrying != null ? `${analysis.volumeBeforeDrying} t` : null} />
           <Field label="Vol. after" value={analysis.volumeAfterDrying != null ? `${analysis.volumeAfterDrying} t` : null} />
           <Field label="Moisture after" value={analysis.moistureAfterDrying != null ? `${analysis.moistureAfterDrying}%` : null} />
