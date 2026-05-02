@@ -71,7 +71,7 @@ const LoginSection = () => {
         </CardHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 mb-4">
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -107,6 +107,13 @@ const LoginSection = () => {
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
+            <button
+              type="button"
+              onClick={() => navigateTo("/forgot-password")}
+              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
+            >
+              Forgot password?
+            </button>
             <p className="text-sm text-muted-foreground">
               Don&apos;t have an account?{" "}
               <button

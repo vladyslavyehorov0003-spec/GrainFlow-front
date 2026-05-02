@@ -2,11 +2,13 @@ import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
+// Anchors are prefixed with "/" so they work from non-home pages too
+// (e.g. /register → click "Pricing" → navigates home, then scrolls to #pricing).
 const NAV_LINKS = [
-  { label: "Features", href: "#features" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Contacts", href: "#contacts" },
+  { label: "Features",     href: "/#features" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Pricing",      href: "/#pricing" },
+  { label: "Contacts",     href: "/#contacts" },
 ];
 const Header = () => {
   return (

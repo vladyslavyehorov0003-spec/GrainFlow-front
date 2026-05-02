@@ -28,19 +28,26 @@ const HeaderSection = () => {
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-3 min-w-0 ml-auto">
-          <Avatar className="h-8 w-8 shrink-0">
-            <AvatarFallback className="text-xs font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          {/* Name + email — hidden on tiny screens to prevent header overflow.
-              Long emails were the main cause of Safari shrinking the page. */}
-          <div className="hidden sm:flex flex-col leading-none min-w-0">
-            <span className="text-sm font-semibold truncate">
-              {user.firstName} {user.lastName}
-            </span>
-            <span className="text-xs text-muted-foreground truncate">{user.email}</span>
-          </div>
+          {/* Avatar + name+email act as the link to the profile page.
+              Wrapping both in a single Link gives a wide click target on mobile. */}
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 sm:gap-3 min-w-0 rounded-md hover:bg-muted px-1 -mx-1 transition-colors"
+          >
+            <Avatar className="h-8 w-8 shrink-0">
+              <AvatarFallback className="text-xs font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            {/* Name + email — hidden on tiny screens to prevent header overflow.
+                Long emails were the main cause of Safari shrinking the page. */}
+            <div className="hidden sm:flex flex-col leading-none min-w-0">
+              <span className="text-sm font-semibold truncate">
+                {user.firstName} {user.lastName}
+              </span>
+              <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+            </div>
+          </Link>
           <Badge variant="secondary" className="text-xs shrink-0">
             {ROLE_LABEL[user.role] ?? user.role}
           </Badge>

@@ -91,3 +91,69 @@ export async function getMe(): Promise<UserResponse> {
   const res = await api.get<{ data: UserResponse }>("/users/me");
   return res.data.data;
 }
+
+// ── Change password (logged in) ────────────────────────────────────────────────
+// Backend: PATCH /users/me/password → returns a fresh AuthResponse so the current
+// session stays alive after all other refresh tokens are revoked. We swap the
+// stored tokens in place so the caller doesn't have to think about it.
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword:     string;
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<void> {
+  const res = await api.patch<{ data: AuthResponse }>("/users/me/password", data);
+  setTokens(res.data.data.accessToken, res.data.data.refreshToken);
+}
+
+// ── Email change (two-factor for VERIFIED, immediate for UNVERIFIED) ───────────
+// Backend response shape:
+//   { status: "CHANGED" | "CODE_SENT", tokens: AuthResponse | null }
+//
+//   CHANGED   → company was UNVERIFIED, email already updated, fresh tokens included.
+//               We swap them in-place; the caller just refreshes user data.
+//   CODE_SENT → company was VERIFIED, link mailed to OLD email + code mailed to NEW.
+//               UI should now show the "enter code" screen.
+
+export interface RequestEmailChangeResponse {
+  status: "CHANGED" | "CODE_SENT";
+}
+
+export async function requestEmailChange(newEmail: string): Promise<RequestEmailChangeResponse> {
+  const res = await api.post<{
+    data: { status: "CHANGED" | "CODE_SENT"; tokens: AuthResponse | null };
+  }>("/users/me/email/request-change", { newEmail });
+
+  const { status, tokens } = res.data.data;
+  if (status === "CHANGED" && tokens) {
+    setTokens(tokens.accessToken, tokens.refreshToken);
+  }
+  return { status };
+}
+
+// Step 2 of the VERIFIED flow. The user clicked the link in the OLD inbox
+// (giving us the token from ?token=…) and pasted the code from the NEW inbox.
+export async function confirmEmailChange(token: string, code: string): Promise<void> {
+  const res = await api.post<{ data: AuthResponse }>(
+    "/users/me/email/confirm-change",
+    { token, code },
+  );
+  setTokens(res.data.data.accessToken, res.data.data.refreshToken);
+}
+
+// ── Forgot password (NOT logged in) ────────────────────────────────────────────
+// Backend always answers 200 even on unknown email (anti-enumeration), so there's
+// no useful return value — UI just shows "if it exists, a link was sent".
+
+export async function forgotPassword(email: string): Promise<void> {
+  await api.post("/auth/forgot-password", { email });
+}
+
+// Completes the forgot-password flow with the token from the link + new password.
+// Backend revokes ALL sessions and does NOT issue tokens — user must log in
+// manually with the new password (closes a window where a leaked link could
+// silently take over an account).
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  await api.post("/auth/reset-password", { token, newPassword });
+}
