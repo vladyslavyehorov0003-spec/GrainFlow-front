@@ -82,8 +82,11 @@ api.interceptors.response.use(
 
     // Not a 401 or already retried — normalize and throw
     // 403 is "authenticated but forbidden" — no point refreshing the token
+    // No Authorization header → request was anonymous (login/register/forgot-password),
+    // so 401 is a real credentials error, not an expired token. Don't trigger refresh.
     const status = error.response?.status;
-    if (status !== 401 || original._retry) {
+    const hadAuthHeader = !!original.headers?.Authorization;
+    if (status !== 401 || original._retry || !hadAuthHeader) {
       return Promise.reject(normalizeError(error));
     }
 
