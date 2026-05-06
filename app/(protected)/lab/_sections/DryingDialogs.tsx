@@ -72,7 +72,10 @@ export function StartDryingDialog({ analysis, onDone }: StartProps) {
 
 const finishSchema = z.object({
   volumeAfterDrying:   z.string().min(1, "Required").refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, "Must be > 0"),
-  moistureAfterDrying: z.string().min(1, "Required").refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) >= 0, "Must be ≥ 0"),
+  moistureAfterDrying: z.string().min(1, "Required").refine((v) => {
+    const n = parseFloat(v);
+    return !isNaN(n) && n >= 0 && n <= 100;
+  }, "Moisture must be between 0 and 100"),
 });
 
 interface FinishProps { analysis: LabAnalysisResponse; onDone: () => void; }
@@ -113,7 +116,7 @@ export function FinishDryingDialog({ analysis, onDone }: FinishProps) {
         <Input type="number" step="0.001" placeholder="0.000" {...register("volumeAfterDrying")} />
       </FormField>
       <FormField label="Moisture after drying (%)" error={errors.moistureAfterDrying?.message as string | undefined}>
-        <Input type="number" step="0.01" placeholder="0.00" {...register("moistureAfterDrying")} />
+        <Input type="number" step="0.01" min="0" max="100" placeholder="0.00" {...register("moistureAfterDrying")} />
       </FormField>
     </FormDialog>
   );
