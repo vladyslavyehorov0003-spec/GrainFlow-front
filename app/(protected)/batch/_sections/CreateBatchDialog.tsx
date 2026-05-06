@@ -28,15 +28,10 @@ const CULTURES = Object.keys(CULTURE_LABEL) as CultureType[];
 const schema = z
   .object({
     contractNumber: z.string().min(1, "Required"),
-    culture: z.enum([
-      "WHEAT",
-      "BARLEY",
-      "CORN",
-      "SUNFLOWER",
-      "SOYBEAN",
-      "RYE",
-      "OATS",
-    ]),
+    culture: z.enum(
+      ["WHEAT", "BARLEY", "CORN", "SUNFLOWER", "SOYBEAN", "RYE", "OATS"],
+      { message: "Select a culture" },
+    ),
     totalVolume: z
       .string()
       .min(1, "Required")

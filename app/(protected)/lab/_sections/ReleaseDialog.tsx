@@ -16,7 +16,7 @@ import { LabAnalysisResponse, releaseLab } from "@/lib/lab";
 import { getErrorMessage } from "@/lib/errors";
 
 const schema = z.object({
-  isApproved: z.boolean(),
+  isApproved: z.boolean({ message: "Please select a verdict" }),
   comment:    z.string().optional(),
 });
 

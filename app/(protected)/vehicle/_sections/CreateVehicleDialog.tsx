@@ -43,7 +43,7 @@ const schema = z.object({
   batchId:        z.string().min(1, "Select a batch"),
   licensePlate:   z.string().min(1, "Required"),
   driverName:     z.string().optional(),
-  culture:        z.enum(["WHEAT", "BARLEY", "CORN", "SUNFLOWER", "SOYBEAN", "RYE", "OATS"]),
+  culture:        z.enum(["WHEAT", "BARLEY", "CORN", "SUNFLOWER", "SOYBEAN", "RYE", "OATS"], { message: "Select a culture" }),
   declaredVolume: z.string().min(1, "Required").refine(
     (v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0,
     "Must be greater than 0"
